@@ -58,7 +58,7 @@ def throughput_logic(topic, redis_con,partition_total,throughput_raw):
         new_partition_total = partition_total + 1
         res = redis_con.get('topic_info')
         # partition_list = ast.literal_eval(res.decode())[topic]
-        partition_list = [[0,3],[1],[2]]
+        partition_list = [[0,3],[1],[]]
 
     return new_partition_total, partition_list
 
