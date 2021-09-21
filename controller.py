@@ -12,7 +12,8 @@ def main():
     # partition_total = os.environ['KAFKA_PARTITION_TOTAL']
     partition_total = 3
     redis_con = redis.Redis(host="192.168.1.6", port=6379, db=0)
-    topic = os.environ['KAFKA_TOPIC']
+    # topic = os.environ['KAFKA_TOPIC']
+    topic = "topic"
     throughput_raw = [0]*partition_total
     while True:
         time.sleep(1)
@@ -45,7 +46,7 @@ def main():
                 False
             )
             
-            redis_con.set("{"+str(topic)+":"+ str(partition_list) +"}")
+            redis_con.set("topic_info","{\""+str(topic)+"\": "+ str(partition_list) +"}")
             partition_total = new_partition_total
             throughput_raw = [0]*partition_total
 
@@ -56,8 +57,8 @@ def throughput_logic(topic, redis_con,partition_total,throughput_raw):
     if partition_total == 3:
         new_partition_total = partition_total + 1
         res = redis_con.get('topic_info')
-        partition_list = ast.literal_eval(res.decode())[topic]
-        partition_list = [[1],[2,4],[3]]
+        # partition_list = ast.literal_eval(res.decode())[topic]
+        partition_list = [[0,3],[1],[2]]
 
     return new_partition_total, partition_list
 

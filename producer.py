@@ -23,7 +23,8 @@ def main():
       topic,
       key=str(value).encode('utf-8'),
       value={"a": 1234, "time": time.time()},
-      partition=random.choice(range(3))
+      # partition=random.choice(range())
+      partition=random.choice(range(4))
     )
     try:
       result = res.get(timeout=10)
