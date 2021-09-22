@@ -6,7 +6,7 @@
 - START_TIME => 0
 
 ```bash
-# ~/.bash_profile or ~/.zshrc
+# ~/.bashrc or ~/.zshrc
 
 export REDIS_HOST=192.168.1.6
 export KAFKA_TOPIC=topic

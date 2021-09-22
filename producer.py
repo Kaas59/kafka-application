@@ -1,41 +1,84 @@
 from kafka.producer import KafkaProducer
 from kafka.errors import KafkaError
-import json
-import random
-import time
+import sys
 import os
+import json
+import time
+import random
+import ast
+import redis
+
+REDIS_HOST = os.environ['REDIS_HOST']
+KAFKA_HOST = os.environ['KAFKA_HOST']
+KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
+KAFKA_REDIS_INFO = "topic_info"
+KAFKA_NUM_PARTITIONS = 3
+THRESHOLD_VALUE = 30.0
+MAX_CONSUMER_SERVER = 4
+DEFAULT_TIMEOUT_MS = 100000
+THROUGHPUT_TIMEOUT = 10
+CONSUMER_NUMBER = int(sys.argv[1])
 
 def main():
-  topic = os.environ['KAFKA_TOPIC']
-  bootstrap_servers = os.environ['KAFKA_HOST']
-#   topic = "quickstart-events"
-#   bootstrap_servers = "192.168.100.10:9092"
-  producer = KafkaProducer(
-    bootstrap_servers=bootstrap_servers,
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
-  )
-  data = ["AAA", "BBB", "CCC"]
+
+  # 処理開始を設定する
   while True:
     if time.time() >= float(os.environ['START_TIME']):
       break
+
+
+  redis_con = redis.Redis(host=REDIS_HOST, port=6379, db=0)
+
+  producer = KafkaProducer(
+    bootstrap_servers = KAFKA_HOST,
+    value_serializer = lambda v: json.dumps(v).encode('utf-8')
+  )
+
+  # パーティションの情報を取得
+  partition_info, start_time = __get_partition_info(redis_con)
+
   for value in range(100):
-    res = producer.send(
-      topic,
-      key=str(value).encode('utf-8'),
-      value={"a": 1234, "time": time.time()},
-      # partition=random.choice(range())
-      partition=random.choice(range(4))
-    )
-    try:
-      result = res.get(timeout=10)
-      print(value, result.partition)
-    except KafkaError:
-      log.exception()
-      pass
-    time.sleep(2)
+    __send_producer(partition_info, producer, value)
+    
+    if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
+      # パーティションの情報を再取得
+      partition_info, start_time = __get_partition_info(redis_con)
+
+    time.sleep(1)
+
+  # メトリクスの出力
+  metrics_output(producer)
+  producer.close()
+
+
+def __send_producer(partition_info, producer, value):
+  
+  res = producer.send(
+    KAFKA_TOPIC,
+    key=str(value).encode('utf-8'),
+    value={"data_id": str(value % 3), "time": time.time()},
+    partition=random.choice(partition_info[value % 3])
+  )
+  try:
+    result = res.get(timeout=10)
+    print(value, result.key, result.partition, result.offset)
+  except KafkaError:
+    log.exception()
+    pass
+
+
+def __get_partition_info(redis_con):
+  res = redis_con.get(KAFKA_REDIS_INFO)
+  partition_info = ast.literal_eval(res.decode())[KAFKA_TOPIC]
+  print(partition_info)
+  start_time = time.time()
+
+  return partition_info, start_time
+
+
+def metrics_output(producer):
   metrics = producer.metrics()
   print(json.dumps(metrics, indent=2))
-
 
 
 if __name__ == '__main__':

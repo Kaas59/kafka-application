@@ -1,14 +1,12 @@
-from copy import Error
-from kafka.admin.client import KafkaAdminClient
-from kafka.admin import NewPartitions
 from kafka.producer import KafkaProducer
 from kafka.consumer import KafkaConsumer
+from kafka.admin import NewPartitions
 from kafka.admin.new_topic import NewTopic
+from kafka.admin.client import KafkaAdminClient
 import os
-import redis
 import time
-import json
 import ast
+import redis
 import statistics
 
 REDIS_HOST = os.environ['REDIS_HOST']
@@ -66,6 +64,9 @@ def main():
             new_partition_total,
             throughput_raw
         )
+        time.sleep(20)
+        partition_list = [[0],[1],[2,3,4,5]]
+        new_partition_total = 6
 
 
         # パーティションの拡張の必要がなければ後続の処理をスキップ
