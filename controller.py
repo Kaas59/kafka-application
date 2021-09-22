@@ -3,6 +3,7 @@ from kafka.consumer import KafkaConsumer
 from kafka.admin import NewPartitions
 from kafka.admin.new_topic import NewTopic
 from kafka.admin.client import KafkaAdminClient
+import sys
 import os
 import time
 import ast
@@ -13,10 +14,12 @@ REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
 KAFKA_REDIS_INFO = "topic_info"
-KAFKA_NUM_PARTITIONS = 3
+KAFKA_NUM_PARTITIONS = 4
 THRESHOLD_VALUE = 30.0
 MAX_CONSUMER_SERVER = 4
 DEFAULT_TIMEOUT_MS = 100000
+CREATE_FLAG = int(sys.argv[1])
+
 
 def main():
 
@@ -24,10 +27,11 @@ def main():
     redis_con = redis.Redis(host=REDIS_HOST, port=6379, db=0)
     
     # Redis情報のリセット
-    redis_con.set(KAFKA_REDIS_INFO, "{\"topic\":[[0],[1],[2]]}")
+    redis_con.set(KAFKA_REDIS_INFO, "{\"topic\":[[0],[1],[2],[3]]}")
 
     # トピックの作成
-    __create_kafka_topic()
+    if CREATE_FLAG:
+        __create_kafka_topic()
     
     # パーティションのサイズを取得
     partition_total = __get_kafka_partitions_size()
@@ -65,26 +69,23 @@ def main():
             throughput_raw
         )
         time.sleep(20)
-        partition_list = [[0],[1],[2,3,4,5]]
-        new_partition_total = 6
+        partition_list = [[0,3],[1],[2],[4]]
+        new_partition_total = 5
 
-
-        # パーティションの拡張の必要がなければ後続の処理をスキップ
-        if new_partition_total <= partition_total:
-            continue
 
         # パーティションの拡張処理
-        __add_kafka_patitions(
-            new_partition_total
-        )
+        if new_partition_total > partition_total:
+            __add_kafka_patitions(
+                new_partition_total
+            )
         
-        # パーティション拡張にともなうRedisデータ更新
+        # Redisデータ更新
         __set_topic_info(
             redis_con,
             partition_list,
         )
 
-        # パーティション拡張にともなう内部変数の更新
+        # 内部変数の更新
         throughput_raw, partition_total = __update_parms(
             new_partition_total
         )
@@ -132,6 +133,7 @@ def __create_kafka_topic():
     )
     print(res)
     admin_client.close()
+    print("トピックの作成完了")
 
 
 
@@ -189,7 +191,9 @@ def __throughput_logic(partition_count, partition_list, new_partition_total, thr
         if throughput[index] > THRESHOLD_VALUE:
             partition_list[index].append(partition_count)
             partition_count += 1
-    print("※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※\n※ パーティションを拡張します。( %2d -> %2d )※\n※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※" %(new_partition_total, partition_count))
+    
+    if partition_count > new_partition_total:
+        print("※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※\n※ パーティションを拡張します。( %2d -> %2d )※\n※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※" %(new_partition_total, partition_count))
 
     new_partition_total = partition_count
 

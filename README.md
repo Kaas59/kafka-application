@@ -1,3 +1,32 @@
+# Kafka Application
+
+## ライブラリ
+- kafka-python
+- redis
+- statistics
+
+```bash
+$ pip3 install kafka-python redis statistics
+```
+
+## 起動コマンド
+
+```bash
+# ①Redis起動
+$ docker-compose up
+
+# ②コントローラー (オプション 1：トピックを作り直す, 0：トピックをそのまま使用する)
+$ python3 controller.py 1
+
+# ③コンシューマー (オプション 1~n：サーバーのNo)
+$ python3 consumer.py
+
+# ④プロデューサー (オプション 1~4：サーバーのNo)
+$ python3 producer.py
+
+```
+
+
 ## 必須環境変数
 
 - REDIS_HOST => 192.168.1.6
@@ -13,6 +42,7 @@ export KAFKA_TOPIC=topic
 export KAFKA_HOST=192.168.1.2:9092
 export START_TIME=0
 ```
+
 
 # コマンドリスト
 
