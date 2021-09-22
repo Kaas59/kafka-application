@@ -17,15 +17,15 @@ THRESHOLD_VALUE = 30.0
 MAX_CONSUMER_SERVER = 4
 DEFAULT_TIMEOUT_MS = 100000
 THROUGHPUT_TIMEOUT = 10
-CONSUMER_NUMBER = int(sys.argv[1])
+PRODUCER_NUMBER = int(sys.argv[1])
 
 def main():
+  print("Producer_"+ str(PRODUCER_NUMBER))
 
   # 処理開始を設定する
   while True:
     if time.time() >= float(os.environ['START_TIME']):
       break
-
 
   redis_con = redis.Redis(host=REDIS_HOST, port=6379, db=0)
 
@@ -52,18 +52,23 @@ def main():
 
 
 def __send_producer(partition_info, producer, value):
+  partition_id = random.choice(partition_info[value % 3])
   
   res = producer.send(
     KAFKA_TOPIC,
-    key=str(value).encode('utf-8'),
-    value={"data_id": str(value % 3), "time": time.time()},
-    partition=random.choice(partition_info[value % 3])
+    key = str(value).encode('utf-8'),
+    value = {"data_id": str(value % 3), "time": time.time()},
+    partition = partition_id
   )
+
   try:
     result = res.get(timeout=10)
-    print(value, result.key, result.partition, result.offset)
+    print("Value = %d, key = %d, partition = %d, offset = %d" %(value, value%3 , partition_id, result.offset))
   except KafkaError:
-    log.exception()
+    error_message = "データの送信中にエラーが発生しました。"
+    print(error_message)
+    print("※※ Value = %d, key = %d, partition = %d" %(value, value%3 , partition_id))
+    # log.exception()
     pass
 
 
