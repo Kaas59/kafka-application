@@ -11,8 +11,7 @@ import json
 import ast
 import statistics
 
-# REDIS_HOST = os.environ['REDIS_HOST']
-REDIS_HOST = "192.168.1.6"
+REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
 KAFKA_REDIS_INFO = "topic_info"
