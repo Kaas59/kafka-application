@@ -11,12 +11,16 @@ import redis
 REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
+
 KAFKA_REDIS_INFO = "topic_info"
 THROUGHPUT_KEY = "time"
 KAFKA_GROUP = "consumer"
+
 DEFAULT_TIMEOUT_MS = 100000
 THROUGHPUT_TIMEOUT = 10
+
 CONSUMER_NUMBER = int(sys.argv[1])
+
 
 def main():
     print("cousumer_"+ str(CONSUMER_NUMBER))
@@ -50,9 +54,13 @@ def main():
         
         for key in throughput_dict.keys():
             redis_con.set("partition_"+str(key), str(throughput_dict[key]))
+            
+            # 収集用ログ
+            redis_con.set("partition_"+str(key)+"-"+str(time.time()), str(throughput_dict[key])) 
         
         print("\nスループット：", throughput_dict)
         print("オフセット：", offset)
+
         consumer_client, start_time, throughput_dict =  __assign_consumer(
             redis_con,
             consumer_client

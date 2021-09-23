@@ -11,13 +11,19 @@ import redis
 REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
+
 KAFKA_REDIS_INFO = "topic_info"
+
 KAFKA_NUM_PARTITIONS = 3
-THRESHOLD_VALUE = 30.0
 CONSUMER_SERVER = 4
+
+THRESHOLD_VALUE = 30.0
+
 DEFAULT_TIMEOUT_MS = 100000
 THROUGHPUT_TIMEOUT = 10
+
 PRODUCER_NUMBER = int(sys.argv[1])
+
 
 def main():
   print("Producer_"+ str(PRODUCER_NUMBER))
@@ -34,7 +40,7 @@ def main():
   # パーティションの情報を取得
   partition_info, start_time = __get_partition_info(redis_con)
 
-  for value in range(100):
+  for value in range(10000):
     __send_producer(partition_info, producer, value)
     
     if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
@@ -44,7 +50,7 @@ def main():
       # プロデューサーの再生成
       producer = __re_create_producer(producer)
 
-    time.sleep(1)
+    # time.sleep(1)
 
   # メトリクスの出力
   metrics_output(producer)
@@ -52,7 +58,10 @@ def main():
 
 
 def __send_producer(partition_info, producer, value):
-  partition_id = random.choice(partition_info[value % CONSUMER_SERVER])
+  if PRODUCER_NUMBER != 3:
+    partition_id = random.choice(partition_info[value % CONSUMER_SERVER])
+  else:
+    partition_id = 3
   
   res = producer.send(
     KAFKA_TOPIC,

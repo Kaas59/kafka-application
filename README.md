@@ -43,7 +43,6 @@ export KAFKA_HOST=192.168.1.2:9092
 export START_TIME=0
 ```
 
-
 # コマンドリスト
 
 ## TOPICの操作
