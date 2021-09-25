@@ -40,7 +40,7 @@ def main():
   # パーティションの情報を取得
   partition_info, start_time = __get_partition_info(redis_con)
 
-  for value in range(10000):
+  for value in range(int(sys.argv[2])):
     __send_producer(partition_info, producer, value)
     
     if (time.time() - start_time) > THROUGHPUT_TIMEOUT:

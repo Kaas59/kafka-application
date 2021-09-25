@@ -17,7 +17,7 @@ THROUGHPUT_KEY = "time"
 KAFKA_GROUP = "consumer"
 
 DEFAULT_TIMEOUT_MS = 100000
-THROUGHPUT_TIMEOUT = 10
+THROUGHPUT_TIMEOUT = 1
 
 CONSUMER_NUMBER = int(sys.argv[1])
 
@@ -56,7 +56,7 @@ def main():
             redis_con.set("partition_"+str(key), str(throughput_dict[key]))
             
             # 収集用ログ
-            redis_con.set("partition_"+str(key)+"-"+str(time.time()), str(throughput_dict[key])) 
+            redis_con.set("log_"+str(key)+"-"+str(time.time()), str(throughput_dict[key])) 
         
         print("\nスループット：", throughput_dict)
         print("オフセット：", offset)

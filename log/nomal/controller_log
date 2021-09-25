@@ -1,0 +1,9 @@
+Kafkaトピック： set()
+新規トピックを作成します。
+CreateTopicsResponse_v3(throttle_time_ms=0, topic_errors=[(topic='topic', error_code=0, error_message=None)])
+トピックの作成完了
+{0, 1, 2, 3}
+{'topic': [[0], [1], [2], [3]]}
+[0, 0, 0, 0]
+{0, 1, 2, 3}
+{0, 1, 2, 3}

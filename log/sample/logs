@@ -1,0 +1,190 @@
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          0               0               0               -               -               -
+consumer        topic           1          0               0               0               -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          0               0               0               -               -               -
+consumer        topic           2          0               0               0               -               -               -
+consumer        topic           1          0               0               0               -               -               -
+consumer        topic           3          0               0               0               -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          0               0               0               -               -               -
+consumer        topic           2          0               0               0               -               -               -
+consumer        topic           1          0               0               0               -               -               -
+consumer        topic           3          0               0               0               -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          0               0               0               -               -               -
+consumer        topic           2          0               0               0               -               -               -
+consumer        topic           1          0               0               0               -               -               -
+consumer        topic           3          0               0               0               -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          0               175             175             -               -               -
+consumer        topic           2          13              176             163             -               -               -
+consumer        topic           1          0               177             177             -               -               -
+consumer        topic           3          92              220             128             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          250             406             156             -               -               -
+consumer        topic           2          13              406             393             -               -               -
+consumer        topic           1          0               408             408             -               -               -
+consumer        topic           3          92              892             800             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          250             636             386             -               -               -
+consumer        topic           2          556             636             80              -               -               -
+consumer        topic           1          443             636             193             -               -               -
+consumer        topic           3          92              1581            1489            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          805             862             57              -               -               -
+consumer        topic           2          556             863             307             -               -               -
+consumer        topic           1          443             863             420             -               -               -
+consumer        topic           3          1626            2295            669             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          805             1084            279             -               -               -
+consumer        topic           2          556             1084            528             -               -               -
+consumer        topic           1          996             1084            88              -               -               -
+consumer        topic           3          1626            2978            1352            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          805             1240            435             -               -               -
+consumer        topic           2          1088            1241            153             -               -               -
+consumer        topic           1          996             1241            245             -               -               -
+consumer        topic           3          3211            3408            197             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          1284            1515            231             -               -               -
+consumer        topic           2          1088            1516            428             -               -               -
+consumer        topic           1          1459            1518            59              -               -               -
+consumer        topic           3          3211            4231            1020            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          1284            1723            439             -               -               -
+consumer        topic           2          1549            1723            174             -               -               -
+consumer        topic           1          1459            1723            264             -               -               -
+consumer        topic           3          4578            4842            264             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          1771            1920            149             -               -               -
+consumer        topic           2          1549            1920            371             -               -               -
+consumer        topic           1          1459            1921            462             -               -               -
+consumer        topic           3          4578            5440            862             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          1771            2071            300             -               -               -
+consumer        topic           2          2023            2071            48              -               -               -
+consumer        topic           1          1939            2072            133             -               -               -
+consumer        topic           3          4578            5927            1349            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          2210            2258            48              -               -               -
+consumer        topic           2          2023            2259            236             -               -               -
+consumer        topic           1          1939            2260            321             -               -               -
+consumer        topic           3          5972            6476            504             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          2210            2465            255             -               -               -
+consumer        topic           2          2023            2465            442             -               -               -
+consumer        topic           1          2369            2465            96              -               -               -
+consumer        topic           3          5972            7095            1123            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          2210            2640            430             -               -               -
+consumer        topic           2          2471            2642            171             -               -               -
+consumer        topic           1          2369            2642            273             -               -               -
+consumer        topic           3          7351            7637            286             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          2684            2855            171             -               -               -
+consumer        topic           2          2471            2855            384             -               -               -
+consumer        topic           1          2369            2857            488             -               -               -
+consumer        topic           3          7351            8287            936             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          2684            3048            364             -               -               -
+consumer        topic           2          2948            3049            101             -               -               -
+consumer        topic           1          2845            3050            205             -               -               -
+consumer        topic           3          8785            8895            110             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          3131            3277            146             -               -               -
+consumer        topic           2          2948            3278            330             -               -               -
+consumer        topic           1          2845            3279            434             -               -               -
+consumer        topic           3          8785            9582            797             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          3131            3483            352             -               -               -
+consumer        topic           2          3383            3483            100             -               -               -
+consumer        topic           1          3288            3485            197             -               -               -
+consumer        topic           3          8785            10190           1405            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          3607            3701            94              -               -               -
+consumer        topic           2          3383            3701            318             -               -               -
+consumer        topic           1          3288            3701            413             -               -               -
+consumer        topic           3          10166           10836           670             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          3607            3867            260             -               -               -
+consumer        topic           2          3383            3868            485             -               -               -
+consumer        topic           1          3786            3869            83              -               -               -
+consumer        topic           3          10166           11386           1220            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          3607            4033            426             -               -               -
+consumer        topic           2          3866            4034            168             -               -               -
+consumer        topic           1          3786            4035            249             -               -               -
+consumer        topic           3          11563           11884           321             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4042            4246            204             -               -               -
+consumer        topic           2          3866            4246            380             -               -               -
+consumer        topic           1          4223            4246            23              -               -               -
+consumer        topic           3          11563           12524           961             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4042            4462            420             -               -               -
+consumer        topic           2          4316            4462            146             -               -               -
+consumer        topic           1          4223            4463            240             -               -               -
+consumer        topic           3          12966           13163           197             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4526            4647            121             -               -               -
+consumer        topic           2          4316            4647            331             -               -               -
+consumer        topic           1          4223            4649            426             -               -               -
+consumer        topic           3          12966           13711           745             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4526            4823            297             -               -               -
+consumer        topic           2          4787            4823            36              -               -               -
+consumer        topic           1          4697            4823            126             -               -               -
+consumer        topic           3          12966           14281           1315            -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4957            4993            36              -               -               -
+consumer        topic           2          4787            4993            206             -               -               -
+consumer        topic           1          4697            4993            296             -               -               -
+consumer        topic           3          14313           14786           473             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4957            5000            43              -               -               -
+consumer        topic           2          4787            5000            213             -               -               -
+consumer        topic           1          5000            5000            0               -               -               -
+consumer        topic           3          14313           15000           687             -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          4957            5000            43              -               -               -
+consumer        topic           2          5000            5000            0               -               -               -
+consumer        topic           1          5000            5000            0               -               -               -
+consumer        topic           3          15000           15000           0               -               -               -
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          5000            5000            0               -               -               -
+consumer        topic           2          5000            5000            0               -               -               -
+consumer        topic           1          5000            5000            0               -               -               -
+consumer        topic           3          15000           15000           0               -               -               -
