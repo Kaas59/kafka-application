@@ -20,7 +20,7 @@ CONSUMER_SERVER = 4
 THRESHOLD_VALUE = 30.0
 
 DEFAULT_TIMEOUT_MS = 100000
-THROUGHPUT_TIMEOUT = 10
+THROUGHPUT_TIMEOUT = 1
 
 PRODUCER_NUMBER = int(sys.argv[1])
 
@@ -58,15 +58,18 @@ def main():
 
 
 def __send_producer(partition_info, producer, value):
+  # a = [[0,1],[2],[3]]
   if PRODUCER_NUMBER != 3:
-    partition_id = random.choice(partition_info[value % CONSUMER_SERVER])
+    # partition_id = random.choice(partition_info[value % CONSUMER_SERVER])
+    partition_id = random.choice(partition_info[value % 3])
   else:
-    partition_id = 3
+    partition_id = random.choice(partition_info[2])
   
   res = producer.send(
     KAFKA_TOPIC,
     key = str(value).encode('utf-8'),
-    value = {"data_id": str(value % CONSUMER_SERVER), "time": time.time()},
+    # value = {"data_id": str(value % CONSUMER_SERVER), "time": time.time()},
+    value = {"data_id": str(value % 3), "time": time.time()},
     partition = partition_id
   )
 
@@ -91,8 +94,10 @@ def __re_create_producer(producer):
   return __create_producer()
 
 def __get_partition_info(redis_con):
-  res = redis_con.get(KAFKA_REDIS_INFO)
-  partition_info = ast.literal_eval(res.decode())[KAFKA_TOPIC]
+  # res = redis_con.get(KAFKA_REDIS_INFO)
+  # partition_info = ast.literal_eval(res.decode())[KAFKA_TOPIC]
+  res = redis_con.get("models_partition")
+  partition_info = ast.literal_eval(res.decode())
   print(partition_info)
   start_time = time.time()
 

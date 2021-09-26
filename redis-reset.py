@@ -1,11 +1,11 @@
+from statistics import mode
 import redis
 import os
-import sys
 import ast
 import time
 
 MAX_PARTITIONS = 5
-DIRECTORY = "data1" + "/"
+DIRECTORY = "data14" + "/"
 
 def main():
     redis_con = redis.Redis(host=os.environ["REDIS_HOST"], port=6379, db=0)
@@ -15,6 +15,7 @@ def main():
         print("2：最後のスループット")
         print("3：削除処理")
         print("4：スループットを出力")
+        print("5：出力先の確認")
         print("99：停止")
         print("=========================")
 
@@ -39,6 +40,20 @@ def main():
         elif select_action == 4:
             print("スループットを出力します。")
             __out_throughput(redis_con)
+
+        elif select_action == 5:
+            print("出力先のリストです。")
+            dir_path = "./log/"+ DIRECTORY
+            for path in ["./log/"+DIRECTORY+"log_"+str(index) for index in range(MAX_PARTITIONS)]:
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+                    pass
+
+                if not os.path.exists(path):
+                    __create_file(path)
+
+
+                print(path)
 
         elif select_action == 99:
             print("ログアウトします。")
@@ -98,6 +113,10 @@ def __write_file(path, key, data):
         f.write("スループット："+str(sum(data)/len(data))+"\n\n")
         print(key+"スループット："+str(sum(data)/len(data)))
     pass            
+
+def __create_file(path):
+    with open(path, mode='w') as f:
+        f.write("")
 
 if __name__=='__main__':
     main()
