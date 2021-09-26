@@ -11,13 +11,19 @@ import redis
 REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
+
 KAFKA_REDIS_INFO = "topic_info"
+
 KAFKA_NUM_PARTITIONS = 3
+CONSUMER_SERVER = 4
+
 THRESHOLD_VALUE = 30.0
-MAX_CONSUMER_SERVER = 4
+
 DEFAULT_TIMEOUT_MS = 100000
-THROUGHPUT_TIMEOUT = 10
+THROUGHPUT_TIMEOUT = 1
+
 PRODUCER_NUMBER = int(sys.argv[1])
+
 
 def main():
   print("Producer_"+ str(PRODUCER_NUMBER))
@@ -29,22 +35,22 @@ def main():
 
   redis_con = redis.Redis(host=REDIS_HOST, port=6379, db=0)
 
-  producer = KafkaProducer(
-    bootstrap_servers = KAFKA_HOST,
-    value_serializer = lambda v: json.dumps(v).encode('utf-8')
-  )
+  producer = __create_producer()
 
   # パーティションの情報を取得
   partition_info, start_time = __get_partition_info(redis_con)
 
-  for value in range(100):
+  for value in range(int(sys.argv[2])):
     __send_producer(partition_info, producer, value)
     
     if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
       # パーティションの情報を再取得
       partition_info, start_time = __get_partition_info(redis_con)
 
-    time.sleep(1)
+      # プロデューサーの再生成
+      producer = __re_create_producer(producer)
+
+    # time.sleep(1)
 
   # メトリクスの出力
   metrics_output(producer)
@@ -52,11 +58,17 @@ def main():
 
 
 def __send_producer(partition_info, producer, value):
-  partition_id = random.choice(partition_info[value % 3])
+  # a = [[0,1],[2],[3]]
+  if PRODUCER_NUMBER != 3:
+    # partition_id = random.choice(partition_info[value % CONSUMER_SERVER])
+    partition_id = random.choice(partition_info[value % 3])
+  else:
+    partition_id = random.choice(partition_info[2])
   
   res = producer.send(
     KAFKA_TOPIC,
     key = str(value).encode('utf-8'),
+    # value = {"data_id": str(value % CONSUMER_SERVER), "time": time.time()},
     value = {"data_id": str(value % 3), "time": time.time()},
     partition = partition_id
   )
@@ -71,10 +83,21 @@ def __send_producer(partition_info, producer, value):
     # log.exception()
     pass
 
+def __create_producer():
+  return KafkaProducer(
+    bootstrap_servers = KAFKA_HOST,
+    value_serializer = lambda v: json.dumps(v).encode('utf-8')
+  )
+
+def __re_create_producer(producer):
+  producer.close()
+  return __create_producer()
 
 def __get_partition_info(redis_con):
-  res = redis_con.get(KAFKA_REDIS_INFO)
-  partition_info = ast.literal_eval(res.decode())[KAFKA_TOPIC]
+  # res = redis_con.get(KAFKA_REDIS_INFO)
+  # partition_info = ast.literal_eval(res.decode())[KAFKA_TOPIC]
+  res = redis_con.get("models_partition")
+  partition_info = ast.literal_eval(res.decode())
   print(partition_info)
   start_time = time.time()
 

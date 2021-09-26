@@ -1,0 +1,21 @@
+{
+  "dataModelId": 1002001,
+  "unixTime": 1632025507,
+  "time": "2021-09-19 13:25:07.362 UTC+09:00",
+  "trainInfo": {
+    "operator": "odpt.Operator:TokyoMetro",
+    "railway": "odpt.Railway:TokyoMetro.Marunouchi",
+    "railDirection": "odpt.RailDirection:Marunouchi.Ogikubo",
+    "trainNumber": "2409Y",
+    "arrivalTime": "2021-09-19 13:24:07.362 UTC+09:00",
+    "status": "move",
+    "delay": 0,
+    "carComposition": 10,
+    "fromStation": "odpt.Station:Marunouchi.Shinjuku",
+    "toStation": "odpt.Station:Marunouchi.NishiShinjuku",
+    "date": "2021-09-20T00:34:15+09:00",
+    "valid": "2021-09-20T00:39:15+09:00",
+    "lat": "35.694515",
+    "lon": "139.69256"
+  }
+}

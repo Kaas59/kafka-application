@@ -1,0 +1,6 @@
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+consumer        topic           0          3332            3332            0               -               -               -
+consumer        topic           2          6666            6666            0               -               -               -
+consumer        topic           1          3336            3336            0               -               -               -
+consumer        topic           3          26666           26666           0               -               -               -

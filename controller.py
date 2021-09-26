@@ -3,6 +3,7 @@ from kafka.consumer import KafkaConsumer
 from kafka.admin import NewPartitions
 from kafka.admin.new_topic import NewTopic
 from kafka.admin.client import KafkaAdminClient
+import sys
 import os
 import time
 import ast
@@ -12,22 +13,37 @@ import statistics
 REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
+
 KAFKA_REDIS_INFO = "topic_info"
-KAFKA_NUM_PARTITIONS = 3
-THRESHOLD_VALUE = 30.0
+HAS_EXTENDED_FLAG = False
+
+KAFKA_NUM_PARTITIONS = 4
 MAX_CONSUMER_SERVER = 4
+MAX_PARTITIONS = 5
+
+THRESHOLD_VALUE = 30.0
+
 DEFAULT_TIMEOUT_MS = 100000
 
+CREATE_FLAG = int(sys.argv[1])
+
+
 def main():
+
+    # データモデルとサーバーリソースの関係
+    models_resource = [[1,2], [3], [4]]
+    models_partition = [[0,1],[2],[3]]
 
     # redisコネクターの設定
     redis_con = redis.Redis(host=REDIS_HOST, port=6379, db=0)
     
     # Redis情報のリセット
-    redis_con.set(KAFKA_REDIS_INFO, "{\"topic\":[[0],[1],[2]]}")
+    redis_con.set(KAFKA_REDIS_INFO, "{\"topic\":[[0],[1],[2],[3]]}")
+    redis_con.set("models_partition", str(models_partition))
 
     # トピックの作成
-    __create_kafka_topic()
+    if CREATE_FLAG:
+        __create_kafka_topic()
     
     # パーティションのサイズを取得
     partition_total = __get_kafka_partitions_size()
@@ -35,6 +51,7 @@ def main():
 
     throughput_raw = [0]*partition_total
     new_partition_total = partition_total
+    time.sleep(9)
 
     while True:
         time.sleep(1)
@@ -58,33 +75,29 @@ def main():
         )
         
         # スループットを分析する
-        new_partition_total, partition_list = __throughput_logic(
+        new_partition_total, partition_list, models_resource = __throughput_logic(
+            models_resource,
             partition_count,
             partition_list,
             new_partition_total,
-            throughput_raw
+            throughput_raw,
+            models_partition
         )
-        time.sleep(20)
-        partition_list = [[0],[1],[2,3,4,5]]
-        new_partition_total = 6
-
-
-        # パーティションの拡張の必要がなければ後続の処理をスキップ
-        if new_partition_total <= partition_total:
-            continue
 
         # パーティションの拡張処理
-        __add_kafka_patitions(
-            new_partition_total
-        )
+        if (new_partition_total > partition_total):
+            __add_kafka_partitions(
+                new_partition_total
+            )
         
-        # パーティション拡張にともなうRedisデータ更新
+        # Redisデータ更新
         __set_topic_info(
             redis_con,
             partition_list,
+            models_partition
         )
 
-        # パーティション拡張にともなう内部変数の更新
+        # 内部変数の更新
         throughput_raw, partition_total = __update_parms(
             new_partition_total
         )
@@ -132,6 +145,7 @@ def __create_kafka_topic():
     )
     print(res)
     admin_client.close()
+    print("トピックの作成完了")
 
 
 
@@ -153,7 +167,7 @@ def __get_kafka_partitions_size():
 def __get_throughput(redis_con, throughput_raw, partition_total):
     for value in range(partition_total):
         try:
-            res = redis_con.get("consumer_" + str(value+1))
+            res = redis_con.get("partition_" + str(value+1))
             throughput_raw[value] = statistics.mean(ast.literal_eval(res.decode()))
         except AttributeError:
             throughput_raw[value] = 0
@@ -175,36 +189,70 @@ def __partiton_count_valid(topic_info, partition_total):
     return partition_list, partition_count
 
 
-def __throughput_logic(partition_count, partition_list, new_partition_total, throughput_raw):
+def __throughput_logic(models_resource, partition_count, partition_list, new_partition_total, throughput_raw, models_partition):
     print(throughput_raw)
 
+    # スループットによる分析ロジック
+    partitions_throughput = list()
     throughput = list()
 
     for value in throughput_raw:
-        throughput.append(value/sum(throughput_raw)*100)
+        partitions_throughput.append(value/sum(throughput_raw)*100)
 
-    print(throughput)
+    print(partitions_throughput)
 
-    for index in range(len(throughput)):
-        if throughput[index] > THRESHOLD_VALUE:
-            partition_list[index].append(partition_count)
+    for servers_list in models_resource:
+        # print("sample start")
+        # print(servers_list)
+        # print([consumer for consumer in servers_list])
+        # print([partition for consumer in servers_list for partition in partition_list[consumer - 1]])
+        # print([partitions_throughput[partition] for consumer in servers_list for partition in partition_list[consumer - 1]])
+        # print("sample end")
+        throughput.append(statistics.mean([partitions_throughput[partition] for consumer in servers_list for partition in partition_list[consumer - 1]]))
+        
+
+    models_resource_count_list = [len(value) for value in models_resource]
+    model_max_index = models_resource_count_list.index(max(models_resource_count_list))
+
+
+    # パーティションとコンシューマーの割当変更
+    if max(throughput) > THRESHOLD_VALUE:
+        if partition_count < MAX_PARTITIONS and HAS_EXTENDED_FLAG:
+            models_partition[model_max_index].append(partition_count)
+            throughput_max_index = throughput.index(max(throughput))
+            models_resource[throughput_max_index].append(models_resource[model_max_index].pop(-1))
+            partition_list[model_max_index].append(partition_list[1].pop(0))
+            partition_list[1].append(partition_count)
             partition_count += 1
-    print("※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※\n※ パーティションを拡張します。( %2d -> %2d )※\n※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※" %(new_partition_total, partition_count))
+            
+            print("sample start")
+            print(servers_list)
+            print([consumer for consumer in servers_list])
+            print([partition for consumer in servers_list for partition in partition_list[consumer - 1]])
+            print([partitions_throughput[partition] for consumer in servers_list for partition in partition_list[consumer - 1]])
+            print("sample end")
+
+        print("models_resource=", models_resource)
+        print("partition_list=",partition_list)
+    
+    
+    if partition_count > new_partition_total:
+        print("※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※\n※ パーティションを拡張します。( %2d -> %2d )※\n※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※" %(new_partition_total, partition_count))
 
     new_partition_total = partition_count
 
-    return new_partition_total, partition_list
+    return new_partition_total, partition_list, models_resource
 
 
-def __add_kafka_patitions(new_partition_total):
-    clinet_mock = KafkaAdminClient(
+def __add_kafka_partitions(new_partition_total):
+    client_mock = KafkaAdminClient(
         bootstrap_servers = KAFKA_HOST
     )
     partitions = NewPartitions(
         total_count=new_partition_total,
         new_assignments=[[0]]
     )
-    clinet_mock.create_partitions(
+    client_mock.create_partitions(
         {"topic": partitions},
         DEFAULT_TIMEOUT_MS,
         False
@@ -219,8 +267,9 @@ def __get_topic_info(redis_con):
     return topic_info
     
 
-def __set_topic_info(redis_con, partition_list):
+def __set_topic_info(redis_con, partition_list, models_partition):
     redis_con.set(KAFKA_REDIS_INFO, "{\""+str(KAFKA_TOPIC)+"\": "+ str(partition_list) +"}")
+    redis_con.set("models_partition", str(models_partition))
 
 
 def __update_parms(new_partition_total):
