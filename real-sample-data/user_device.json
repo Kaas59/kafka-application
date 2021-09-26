@@ -1,0 +1,283 @@
+{
+  "dataModelId": 10040001,
+  "time": 1632025507,
+  "dateTime": "2021-09-19 13:25:07.362 UTC+09:00",
+  "user_id": 1001,
+  "data":[
+    {
+      "userInfo": {
+        "deviceModel": "iPhone12",
+        "deviceBrand": "Apple",
+        "deviceRelease": "14.7.1"
+      },
+      "accelerometer": {
+        "time": "2.407691666E-2",
+        "x": "1.616638184E-2",
+        "y": "6.960525513E-2",
+        "z": "9.878557434E0",
+        "unit": "m/s^2"
+      },
+      "barometer": {
+        "time": "-5.229943750E-1",
+        "x":"1.004544449E3",
+        "unit": "hPa"
+      },
+      "gyroscope": {
+        "time": "3.908891664E-2",
+        "x": "6.995135918E-4",
+        "y": "-3.365945886E-4",
+        "z": "-8.512758650E-4",
+        "unit": "rad/s"
+      },
+      "linearAccelerometer": {
+        "time": "3.908891664E-2",
+        "x": "-1.136119300E-1",
+        "y": "-2.452838444E-2",
+        "z": "2.745443165E-2",
+        "unit": "m/s^2"
+      },
+      "location": {
+        "time": "1.201775074E0",
+        "latitude": "3.569781985E1",
+        "longitude": "1.396482057E2",
+        "height": "4.431682678E1",
+        "velocity": "-1.000000000E0",
+        "direction": "-1.000000000E0",
+        "horizontalAccuracy": "6.500000000E1",
+        "verticalAccuracy": "6.500000000E1"
+      },
+      "magnetometer": {
+        "time": "3.908891664E-2",
+        "x": "1.646123505E1",
+        "y": "-1.010426331E1",
+        "z": "1.541348267E1",
+        "unit": "μT"
+      },
+      "proximity": {
+        "time": "-2.442770405E5",
+        "distance": "5.000000000E0",
+        "unit": "cm"
+      }
+    },
+    {
+      "userInfo": {
+        "deviceModel": "iPhone12",
+        "deviceBrand": "Apple",
+        "deviceRelease": "14.7.1"
+      },
+      "accelerometer": {
+        "time": "2.407691666E-2",
+        "x": "1.616638184E-2",
+        "y": "6.960525513E-2",
+        "z": "9.878557434E0",
+        "unit": "m/s^2"
+      },
+      "barometer": {
+        "time": "-5.229943750E-1",
+        "x":"1.004544449E3",
+        "unit": "hPa"
+      },
+      "gyroscope": {
+        "time": "3.908891664E-2",
+        "x": "6.995135918E-4",
+        "y": "-3.365945886E-4",
+        "z": "-8.512758650E-4",
+        "unit": "rad/s"
+      },
+      "linearAccelerometer": {
+        "time": "3.908891664E-2",
+        "x": "-1.136119300E-1",
+        "y": "-2.452838444E-2",
+        "z": "2.745443165E-2",
+        "unit": "m/s^2"
+      },
+      "location": {
+        "time": "1.201775074E0",
+        "latitude": "3.569781985E1",
+        "longitude": "1.396482057E2",
+        "height": "4.431682678E1",
+        "velocity": "-1.000000000E0",
+        "direction": "-1.000000000E0",
+        "horizontalAccuracy": "6.500000000E1",
+        "verticalAccuracy": "6.500000000E1"
+      },
+      "magnetometer": {
+        "time": "3.908891664E-2",
+        "x": "1.646123505E1",
+        "y": "-1.010426331E1",
+        "z": "1.541348267E1",
+        "unit": "μT"
+      },
+      "proximity": {
+        "time": "-2.442770405E5",
+        "distance": "5.000000000E0",
+        "unit": "cm"
+      }
+    },
+    {
+      "userInfo": {
+        "deviceModel": "iPhone12",
+        "deviceBrand": "Apple",
+        "deviceRelease": "14.7.1"
+      },
+      "accelerometer": {
+        "time": "2.407691666E-2",
+        "x": "1.616638184E-2",
+        "y": "6.960525513E-2",
+        "z": "9.878557434E0",
+        "unit": "m/s^2"
+      },
+      "barometer": {
+        "time": "-5.229943750E-1",
+        "x":"1.004544449E3",
+        "unit": "hPa"
+      },
+      "gyroscope": {
+        "time": "3.908891664E-2",
+        "x": "6.995135918E-4",
+        "y": "-3.365945886E-4",
+        "z": "-8.512758650E-4",
+        "unit": "rad/s"
+      },
+      "linearAccelerometer": {
+        "time": "3.908891664E-2",
+        "x": "-1.136119300E-1",
+        "y": "-2.452838444E-2",
+        "z": "2.745443165E-2",
+        "unit": "m/s^2"
+      },
+      "location": {
+        "time": "1.201775074E0",
+        "latitude": "3.569781985E1",
+        "longitude": "1.396482057E2",
+        "height": "4.431682678E1",
+        "velocity": "-1.000000000E0",
+        "direction": "-1.000000000E0",
+        "horizontalAccuracy": "6.500000000E1",
+        "verticalAccuracy": "6.500000000E1"
+      },
+      "magnetometer": {
+        "time": "3.908891664E-2",
+        "x": "1.646123505E1",
+        "y": "-1.010426331E1",
+        "z": "1.541348267E1",
+        "unit": "μT"
+      },
+      "proximity": {
+        "time": "-2.442770405E5",
+        "distance": "5.000000000E0",
+        "unit": "cm"
+      }
+    },
+    {
+      "userInfo": {
+        "deviceModel": "iPhone12",
+        "deviceBrand": "Apple",
+        "deviceRelease": "14.7.1"
+      },
+      "accelerometer": {
+        "time": "2.407691666E-2",
+        "x": "1.616638184E-2",
+        "y": "6.960525513E-2",
+        "z": "9.878557434E0",
+        "unit": "m/s^2"
+      },
+      "barometer": {
+        "time": "-5.229943750E-1",
+        "x":"1.004544449E3",
+        "unit": "hPa"
+      },
+      "gyroscope": {
+        "time": "3.908891664E-2",
+        "x": "6.995135918E-4",
+        "y": "-3.365945886E-4",
+        "z": "-8.512758650E-4",
+        "unit": "rad/s"
+      },
+      "linearAccelerometer": {
+        "time": "3.908891664E-2",
+        "x": "-1.136119300E-1",
+        "y": "-2.452838444E-2",
+        "z": "2.745443165E-2",
+        "unit": "m/s^2"
+      },
+      "location": {
+        "time": "1.201775074E0",
+        "latitude": "3.569781985E1",
+        "longitude": "1.396482057E2",
+        "height": "4.431682678E1",
+        "velocity": "-1.000000000E0",
+        "direction": "-1.000000000E0",
+        "horizontalAccuracy": "6.500000000E1",
+        "verticalAccuracy": "6.500000000E1"
+      },
+      "magnetometer": {
+        "time": "3.908891664E-2",
+        "x": "1.646123505E1",
+        "y": "-1.010426331E1",
+        "z": "1.541348267E1",
+        "unit": "μT"
+      },
+      "proximity": {
+        "time": "-2.442770405E5",
+        "distance": "5.000000000E0",
+        "unit": "cm"
+      }
+    },
+    {
+      "userInfo": {
+        "deviceModel": "iPhone12",
+        "deviceBrand": "Apple",
+        "deviceRelease": "14.7.1"
+      },
+      "accelerometer": {
+        "time": "2.407691666E-2",
+        "x": "1.616638184E-2",
+        "y": "6.960525513E-2",
+        "z": "9.878557434E0",
+        "unit": "m/s^2"
+      },
+      "barometer": {
+        "time": "-5.229943750E-1",
+        "x":"1.004544449E3",
+        "unit": "hPa"
+      },
+      "gyroscope": {
+        "time": "3.908891664E-2",
+        "x": "6.995135918E-4",
+        "y": "-3.365945886E-4",
+        "z": "-8.512758650E-4",
+        "unit": "rad/s"
+      },
+      "linearAccelerometer": {
+        "time": "3.908891664E-2",
+        "x": "-1.136119300E-1",
+        "y": "-2.452838444E-2",
+        "z": "2.745443165E-2",
+        "unit": "m/s^2"
+      },
+      "location": {
+        "time": "1.201775074E0",
+        "latitude": "3.569781985E1",
+        "longitude": "1.396482057E2",
+        "height": "4.431682678E1",
+        "velocity": "-1.000000000E0",
+        "direction": "-1.000000000E0",
+        "horizontalAccuracy": "6.500000000E1",
+        "verticalAccuracy": "6.500000000E1"
+      },
+      "magnetometer": {
+        "time": "3.908891664E-2",
+        "x": "1.646123505E1",
+        "y": "-1.010426331E1",
+        "z": "1.541348267E1",
+        "unit": "μT"
+      },
+      "proximity": {
+        "time": "-2.442770405E5",
+        "distance": "5.000000000E0",
+        "unit": "cm"
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
-  "dataModelId": 1002001,
-  "unixTime": 1632025507,
-  "time": "2021-09-19 13:25:07.362 UTC+09:00",
+  "dataModelId": 10020001,
+  "time": 1632025507,
+  "dateTime": "2021-09-19 13:25:07.362 UTC+09:00",
   "trainInfo": {
     "operator": "odpt.Operator:TokyoMetro",
     "railway": "odpt.Railway:TokyoMetro.Marunouchi",

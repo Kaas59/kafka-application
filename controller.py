@@ -15,7 +15,7 @@ KAFKA_HOST = os.environ['KAFKA_HOST']
 KAFKA_TOPIC = os.environ['KAFKA_TOPIC']
 
 KAFKA_REDIS_INFO = "topic_info"
-HAS_EXTENDED_FLAG = False
+HAS_EXTENDED_FLAG = True
 
 KAFKA_NUM_PARTITIONS = 4
 MAX_CONSUMER_SERVER = 4
@@ -75,7 +75,7 @@ def main():
         )
         
         # スループットを分析する
-        new_partition_total, partition_list, models_resource = __throughput_logic(
+        new_partition_total, partition_list, models_resource, models_partition = __throughput_logic(
             models_resource,
             partition_count,
             partition_list,
@@ -213,6 +213,7 @@ def __throughput_logic(models_resource, partition_count, partition_list, new_par
 
     models_resource_count_list = [len(value) for value in models_resource]
     model_max_index = models_resource_count_list.index(max(models_resource_count_list))
+    print("model_max_index=", model_max_index)
 
 
     # パーティションとコンシューマーの割当変更
@@ -225,15 +226,16 @@ def __throughput_logic(models_resource, partition_count, partition_list, new_par
             partition_list[1].append(partition_count)
             partition_count += 1
             
-            print("sample start")
-            print(servers_list)
-            print([consumer for consumer in servers_list])
-            print([partition for consumer in servers_list for partition in partition_list[consumer - 1]])
-            print([partitions_throughput[partition] for consumer in servers_list for partition in partition_list[consumer - 1]])
-            print("sample end")
+            # print("sample start")
+            # print(servers_list)
+            # print([consumer for consumer in servers_list])
+            # print([partition for consumer in servers_list for partition in partition_list[consumer - 1]])
+            # print([partitions_throughput[partition] for consumer in servers_list for partition in partition_list[consumer - 1]])
+            # print("sample end")
 
         print("models_resource=", models_resource)
         print("partition_list=",partition_list)
+        print("models_partition=",models_partition)
     
     
     if partition_count > new_partition_total:
@@ -241,7 +243,7 @@ def __throughput_logic(models_resource, partition_count, partition_list, new_par
 
     new_partition_total = partition_count
 
-    return new_partition_total, partition_list, models_resource
+    return new_partition_total, partition_list, models_resource, models_partition
 
 
 def __add_kafka_partitions(new_partition_total):

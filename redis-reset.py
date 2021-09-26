@@ -5,7 +5,7 @@ import ast
 import time
 
 MAX_PARTITIONS = 5
-DIRECTORY = "data14" + "/"
+DIRECTORY = "data6" + "/"
 
 def main():
     redis_con = redis.Redis(host=os.environ["REDIS_HOST"], port=6379, db=0)

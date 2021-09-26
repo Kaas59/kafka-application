@@ -26,6 +26,9 @@ PRODUCER_NUMBER = int(sys.argv[1])
 
 
 def main():
+
+  data_list_tmp = json_load()
+  data_list = data_list_tmp
   print("Producer_"+ str(PRODUCER_NUMBER))
 
   # 処理開始を設定する
@@ -40,48 +43,57 @@ def main():
   # パーティションの情報を取得
   partition_info, start_time = __get_partition_info(redis_con)
 
-  for value in range(int(sys.argv[2])):
-    __send_producer(partition_info, producer, value)
-    
-    if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
-      # パーティションの情報を再取得
-      partition_info, start_time = __get_partition_info(redis_con)
+  for value in range(10):
+    for value in range(1000):
+      data_list = __send_producer(partition_info, producer, value, data_list)
+      
+      if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
+        # パーティションの情報を再取得
+        partition_info, start_time = __get_partition_info(redis_con)
 
-      # プロデューサーの再生成
-      producer = __re_create_producer(producer)
+        # プロデューサーの再生成
+        producer = __re_create_producer(producer)
 
-    # time.sleep(1)
+    data_list = data_list_tmp
+
+      # time.sleep(1)
 
   # メトリクスの出力
   metrics_output(producer)
   producer.close()
 
 
-def __send_producer(partition_info, producer, value):
-  # a = [[0,1],[2],[3]]
+def __send_producer(partition_info, producer, value, data_list):
+  model_id = 0
+
   if PRODUCER_NUMBER != 3:
-    # partition_id = random.choice(partition_info[value % CONSUMER_SERVER])
-    partition_id = random.choice(partition_info[value % 3])
+    model_id = value % 3
   else:
-    partition_id = random.choice(partition_info[2])
+    model_id = 2
+  
+  partition_id = random.choice(partition_info[model_id])
+  data_list[model_id]["time"] = time.time()
   
   res = producer.send(
     KAFKA_TOPIC,
-    key = str(value).encode('utf-8'),
-    # value = {"data_id": str(value % CONSUMER_SERVER), "time": time.time()},
-    value = {"data_id": str(value % 3), "time": time.time()},
+    key = str(data_list[model_id]["dataModelId"]).encode('utf-8'),
+    value = data_list[model_id],
     partition = partition_id
   )
 
   try:
     result = res.get(timeout=10)
-    print("Value = %d, key = %d, partition = %d, offset = %d" %(value, value%3 , partition_id, result.offset))
+    print("Value = %d, key = %d, partition = %d, offset = %d" %(model_id, data_list[model_id]["dataModelId"] , partition_id, result.offset))
   except KafkaError:
     error_message = "データの送信中にエラーが発生しました。"
     print(error_message)
     print("※※ Value = %d, key = %d, partition = %d" %(value, value%3 , partition_id))
     # log.exception()
     pass
+
+  data_list[model_id]["dataModelId"] += 1
+
+  return data_list
 
 def __create_producer():
   return KafkaProducer(
@@ -107,6 +119,15 @@ def __get_partition_info(redis_con):
 def metrics_output(producer):
   metrics = producer.metrics()
   print(json.dumps(metrics, indent=2))
+
+
+def json_load():
+  pass
+  model_1 = json.load(open('./real-sample-data/jr_operation.json', 'r'))
+  model_2 = json.load(open('./real-sample-data/metro_operation.json', 'r'))
+  model_3 = json.load(open('./real-sample-data/user_device.json', 'r'))
+  data_list = [model_1, model_2, model_3]
+  return data_list
 
 
 if __name__ == '__main__':
