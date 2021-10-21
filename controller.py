@@ -215,13 +215,20 @@ def __throughput_logic(models_resource, partition_count, partition_list, new_par
     model_max_index = models_resource_count_list.index(max(models_resource_count_list))
     print("model_max_index=", model_max_index)
 
+    # データモデルとサーバーリソースの関係
+    # models_resource = [[1,2], [3], [4]]
+    # models_partition = [[0,1],[2],[3]]
 
     # パーティションとコンシューマーの割当変更
     if max(throughput) > THRESHOLD_VALUE:
         if partition_count < MAX_PARTITIONS and HAS_EXTENDED_FLAG:
-            models_partition[model_max_index].append(partition_count)
+            # 拡張すべきモデルを抽出
             throughput_max_index = throughput.index(max(throughput))
+            # 新規パーティションの割当(実際に宛先が変更されるもの)
+            models_partition[throughput_max_index].append(partition_count)
+            # リソースの再割当(管理上)
             models_resource[throughput_max_index].append(models_resource[model_max_index].pop(-1))
+            # consumer側の読み取りパーティション設定
             partition_list[model_max_index].append(partition_list[1].pop(0))
             partition_list[1].append(partition_count)
             partition_count += 1
