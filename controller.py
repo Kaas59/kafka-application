@@ -47,6 +47,7 @@ def main():
     
     # パーティションのサイズを取得
     partition_total = __get_kafka_partitions_size()
+    print("partition_total=",partition_total)
 
 
     throughput_raw = [0]*partition_total
@@ -167,7 +168,7 @@ def __get_kafka_partitions_size():
 def __get_throughput(redis_con, throughput_raw, partition_total):
     for value in range(partition_total):
         try:
-            res = redis_con.get("partition_" + str(value+1))
+            res = redis_con.get("partition_" + str(value))
             throughput_raw[value] = statistics.mean(ast.literal_eval(res.decode()))
         except AttributeError:
             throughput_raw[value] = 0
