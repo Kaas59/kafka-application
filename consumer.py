@@ -57,6 +57,8 @@ def main():
             
             # 収集用ログ
             redis_con.set("log_"+str(key)+"-"+str(time.time()), str(throughput_dict[key])) 
+            redis_con.set("metrics_"+str(key)+"-"+str(time.time()),str(consumer_client.metrics()))
+            print(""+str(consumer_client.metrics())+"")
         
         print("\nスループット：", throughput_dict)
         print("オフセット：", offset)

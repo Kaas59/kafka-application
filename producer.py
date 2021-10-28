@@ -65,13 +65,20 @@ def main():
 
 def __send_producer(partition_info, producer, value, data_list):
   model_id = 0
+  model2_index = 0
 
   if PRODUCER_NUMBER != 3:
     model_id = value % 3
+    partition_id = random.choice(partition_info[model_id])
   else:
     model_id = 2
-  
-  partition_id = random.choice(partition_info[model_id])
+    if len(partition_info[model_id]) == 2:
+      model2_index += 1
+      key = 0 if (model2_index % 10) == 0 else 1
+      partition_id = partition_info[model_id][key]
+    else:
+      partition_id = partition_info[model_id][0]
+
   data_list[model_id]["time"] = time.time()
   
   res = producer.send(
