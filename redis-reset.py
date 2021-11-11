@@ -3,9 +3,10 @@ import redis
 import os
 import ast
 import time
+import re
 
 MAX_PARTITIONS = 5
-DIRECTORY = "data10" + "/"
+DIRECTORY = "data12" + "/"
 
 def main():
     redis_con = redis.Redis(host=os.environ["REDIS_HOST"], port=6379, db=0)
@@ -97,21 +98,30 @@ def __out_throughput(redis_con):
                 data = redis_con.get(key)
                 for index in range(MAX_PARTITIONS):
                     if key.startswith("log_"+str(index)):
-                        __write_file(path[index], key, ast.literal_eval(data.decode()))
+                        data_log = redis_con.get(key)
+                        log_time = key.split("-")
+                        data_metrics = redis_con.get("metrics-log_"+str(index)+"-"+ str(log_time[1]))
+                        try:
+                            data_metrics = int(data_metrics.decode())
+                        except AttributeError:
+                            data_metrics = 1
+                        __write_file(path[index], key, ast.literal_eval(data_log.decode()), data_metrics)
                         pass
 
-                redis_con.delete(key)
+                        redis_con.delete(key)
+                        redis_con.delete(data_metrics)
                 pass
 
             else:
                 pass
 
-def __write_file(path, key, data):
+def __write_file(path, key, data_log, data_metrics):
     with open(path, mode="a") as f:
         f.write("Key="+str(key)+"\n")
-        f.write(str(data)+"\n")
-        f.write("スループット："+str(sum(data)/len(data))+"\n\n")
-        print(key+"スループット："+str(sum(data)/len(data)))
+        f.write(str(data_log)+"\n")
+        f.write("スループット："+str(sum(data_log)/len(data_log))+"\n\n")
+        f.write(str(data_metrics)+"\n")
+        print(key+",\tスループット："+str(sum(data_log)/len(data_log))+",\trecords-consumed-rate:"+str(data_metrics))
     pass            
 
 def __create_file(path):

@@ -9,6 +9,7 @@ import time
 import ast
 import redis
 import statistics
+from itertools import chain
 
 REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
@@ -40,6 +41,8 @@ def main():
     # Redis情報のリセット
     redis_con.set(KAFKA_REDIS_INFO, "{\"topic\":[[0],[1],[2],[3]]}")
     redis_con.set("models_partition", str(models_partition))
+    for index in [0,1,2,3]:
+        redis_con.set("metrics_"+str(index), 1)
 
     # トピックの作成
     if CREATE_FLAG:

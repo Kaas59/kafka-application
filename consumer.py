@@ -37,6 +37,7 @@ def main():
         redis_con,
         consumer_client
     )
+    pre_records_consumed_total = 0
 
     while True:
         
@@ -54,11 +55,20 @@ def main():
         
         for key in throughput_dict.keys():
             redis_con.set("partition_"+str(key), str(throughput_dict[key]))
+            # print(consumer_client.metrics())
+            records_consumed_total = round(consumer_client.metrics()['consumer-fetch-manager-metrics']['records-consumed-total'])
             
             # 収集用ログ
-            redis_con.set("log_"+str(key)+"-"+str(time.time()), str(throughput_dict[key])) 
-            redis_con.set("metrics_"+str(key)+"-"+str(time.time()),str(consumer_client.metrics()))
-            print(""+str(consumer_client.metrics())+"")
+            log_time = time.time()
+            redis_con.set("log_"+str(key)+"-"+str(log_time), str(throughput_dict[key])) 
+            redis_con.set("metrics-log_"+str(key)+"-"+str(log_time),str(records_consumed_total- pre_records_consumed_total))
+            all_records_consumed_total = redis_con.get("metrics_"+str(key))
+            if all_records_consumed_total is None:
+                all_records_consumed_total = 0
+            redis_con.set("metrics_"+str(key),str(all_records_consumed_total + records_consumed_total - pre_records_consumed_total))
+            print("records-consumed-total:"+str(records_consumed_total - pre_records_consumed_total)+"")
+            print("all-records-consumed-total:"+str(all_records_consumed_total + records_consumed_total - pre_records_consumed_total)+"")
+            pre_records_consumed_total = records_consumed_total
         
         print("\nスループット：", throughput_dict)
         print("オフセット：", offset)

@@ -7,6 +7,7 @@ import time
 import random
 import ast
 import redis
+from itertools import chain
 
 REDIS_HOST = os.environ['REDIS_HOST']
 KAFKA_HOST = os.environ['KAFKA_HOST']
@@ -40,16 +41,19 @@ def main():
 
   producer = __create_producer()
 
+  __set_partition_produce_info(redis_con)
+
   # パーティションの情報を取得
-  partition_info, start_time = __get_partition_info(redis_con)
+  partition_info, partition_consumed_total, start_time = __get_partition_consumed_info(redis_con)
 
   for value in range(10):
     for value in range(1000):
-      data_list = __send_producer(partition_info, producer, value, data_list)
+      data_list = __send_producer(partition_info, partition_consumed_total, producer, value, data_list)
       
       if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
+        __set_partition_produce_info(redis_con)
         # パーティションの情報を再取得
-        partition_info, start_time = __get_partition_info(redis_con)
+        partition_info, partition_consumed_total, start_time = __get_partition_consumed_info(redis_con)
 
         # プロデューサーの再生成
         producer = __re_create_producer(producer)
@@ -63,7 +67,7 @@ def main():
   producer.close()
 
 
-def __send_producer(partition_info, producer, value, data_list):
+def __send_producer(partition_info, partition_consumed_total, producer, value, data_list):
   model_id = 0
   model2_index = 0
 
@@ -74,7 +78,12 @@ def __send_producer(partition_info, producer, value, data_list):
     model_id = 2
     if len(partition_info[model_id]) == 2:
       model2_index += 1
-      key = 0 if (model2_index % 10) == 0 else 1
+      rate = list()
+      for index in partition_info[model_id]:
+        rate.append(partition_consumed_total[index])
+      # print('rate'+str(rate))
+      # print("rate max"+str(round(rate[0]/sum(rate)*10)))
+      key = 0 if model2_index % 10 <= round(rate[0]/sum(rate)*10)  else 1
       partition_id = partition_info[model_id][key]
     else:
       partition_id = partition_info[model_id][0]
@@ -112,15 +121,31 @@ def __re_create_producer(producer):
   producer.close()
   return __create_producer()
 
-def __get_partition_info(redis_con):
+
+def __set_partition_produce_info(redis_con, partition_produce_new):
+  for key in range(len(partition_produce_new)):
+    redis_con.keys
+    partition_produce_total_tmp = redis_con.get("partition_produce_"+str(key))
+    redis_con.set("partition_produce_"+str(key), partition_produce_new[key] + partition_produce_total_tmp)
+
+
+def __get_partition_consumed_info(redis_con):
   # res = redis_con.get(KAFKA_REDIS_INFO)
   # partition_info = ast.literal_eval(res.decode())[KAFKA_TOPIC]
-  res = redis_con.get("models_partition")
-  partition_info = ast.literal_eval(res.decode())
+  models_partition = redis_con.get("models_partition")
+  partition_info = ast.literal_eval(models_partition.decode())
+  partition_consumed_total = dict()
+  for index in list(chain.from_iterable(partition_info)):
+    try:
+      metrics = redis_con.get("metrics_"+str(index))
+      print("partition_consumed_total["+str(index)+"]:"+metrics.decode())
+      partition_consumed_total[index] = int(metrics.decode())
+    except AttributeError:
+      partition_consumed_total[index] = 100
   print(partition_info)
   start_time = time.time()
 
-  return partition_info, start_time
+  return partition_info, partition_consumed_total, start_time
 
 
 def metrics_output(producer):
