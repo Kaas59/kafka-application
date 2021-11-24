@@ -3,7 +3,7 @@ name: Mirroring
 on: [ push, delete ]
 
 jobs:
-  to_codecommit:
+  codecommit:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
