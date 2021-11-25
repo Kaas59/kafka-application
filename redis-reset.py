@@ -6,7 +6,7 @@ import time
 import re
 
 MAX_PARTITIONS = 5
-DIRECTORY = "data12" + "/"
+DIRECTORY = "data13" + "/"
 
 def main():
     redis_con = redis.Redis(host=os.environ["REDIS_HOST"], port=6379, db=0)
@@ -31,7 +31,7 @@ def main():
             __cal_throughput(redis_con)
 
         elif select_action == 3:
-            time_wait = 5
+            time_wait = 3
             print(str(time_wait)+"秒後に削除処理が実行されます。")
             for value in range(time_wait):
                 print(time_wait - value)
@@ -119,7 +119,7 @@ def __write_file(path, key, data_log, data_metrics):
     with open(path, mode="a") as f:
         f.write("Key="+str(key)+"\n")
         f.write(str(data_log)+"\n")
-        f.write("スループット："+str(sum(data_log)/len(data_log))+"\n\n")
+        f.write("スループット："+str(sum(data_log)/len(data_log))+"\n")
         f.write(str(data_metrics)+"\n")
         print(key+",\tスループット："+str(sum(data_log)/len(data_log))+",\trecords-consumed-rate:"+str(data_metrics))
     pass            

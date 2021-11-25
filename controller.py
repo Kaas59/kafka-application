@@ -20,6 +20,7 @@ HAS_EXTENDED_FLAG = True
 
 KAFKA_NUM_PARTITIONS = 4
 MAX_CONSUMER_SERVER = 4
+MAX_PRODUCER_SERVER = 4
 MAX_PARTITIONS = 5
 
 THRESHOLD_VALUE = 30.0
@@ -43,6 +44,11 @@ def main():
     redis_con.set("models_partition", str(models_partition))
     for index in [0,1,2,3]:
         redis_con.set("metrics_"+str(index), 1)
+
+    
+    for producer_index in range(MAX_PRODUCER_SERVER):
+        for partition_index in range(MAX_PARTITIONS):
+            redis_con.set("partition_"+str(partition_index)+"-producer_"+str(producer_index+1), 0)
 
     # トピックの作成
     if CREATE_FLAG:

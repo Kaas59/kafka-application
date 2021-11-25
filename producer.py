@@ -18,7 +18,7 @@ KAFKA_REDIS_INFO = "topic_info"
 KAFKA_NUM_PARTITIONS = 3
 CONSUMER_SERVER = 4
 
-THRESHOLD_VALUE = 30.0
+# THRESHOLD_VALUE = 30.0
 
 DEFAULT_TIMEOUT_MS = 100000
 THROUGHPUT_TIMEOUT = 1
@@ -41,22 +41,24 @@ def main():
 
   producer = __create_producer()
 
-  __set_partition_produce_info(redis_con)
 
   # パーティションの情報を取得
   partition_info, partition_consumed_total, start_time = __get_partition_consumed_info(redis_con)
+  producer_send_partition_count = __reset_producer_send_partition_count()
+  __set_partition_produce_info(redis_con, dict())
+  partition_producer_total = dict()
 
   for value in range(10):
     for value in range(1000):
-      data_list = __send_producer(partition_info, partition_consumed_total, producer, value, data_list)
+      data_list, partition_id = __send_producer(partition_info, partition_consumed_total, partition_producer_total, producer, value, data_list)
+      producer_send_partition_count[str(partition_id+1)] += 1
       
       if (time.time() - start_time) > THROUGHPUT_TIMEOUT:
-        __set_partition_produce_info(redis_con)
-        # パーティションの情報を再取得
-        partition_info, partition_consumed_total, start_time = __get_partition_consumed_info(redis_con)
-
-        # プロデューサーの再生成
-        producer = __re_create_producer(producer)
+        producer, producer_send_partition_count, partition_producer_total, partition_info, partition_consumed_total, start_time = __timeout_reset(
+          redis_con,
+          producer_send_partition_count,
+          producer
+        )
 
     data_list = data_list_tmp
 
@@ -66,24 +68,35 @@ def main():
   metrics_output(producer)
   producer.close()
 
+def __timeout_reset(redis_con, producer_send_partition_count, producer):
+  # 送信情報を記録
+  __set_partition_produce_info(redis_con, producer_send_partition_count)
 
-def __send_producer(partition_info, partition_consumed_total, producer, value, data_list):
+  # パーティションの情報を再取得
+  partition_info, partition_consumed_total, start_time = __get_partition_consumed_info(redis_con)
+
+  # パーティション毎のデータ数を取得
+  partition_producer_total = __get_partititons_producer_info(redis_con)
+
+  # プロデューサーの再生成
+  producer = __re_create_producer(producer)
+  producer_send_partition_count = __reset_producer_send_partition_count()
+  return producer, producer_send_partition_count, partition_producer_total, partition_info, partition_consumed_total, start_time
+
+
+def __send_producer(partition_info, partition_consumed_total, partition_producer_total, producer, value, data_list):
   model_id = 0
   model2_index = 0
 
-  if PRODUCER_NUMBER != 3:
+  if PRODUCER_NUMBER != 3 and PRODUCER_NUMBER != 4:
     model_id = value % 3
     partition_id = random.choice(partition_info[model_id])
   else:
     model_id = 2
     if len(partition_info[model_id]) == 2:
       model2_index += 1
-      rate = list()
-      for index in partition_info[model_id]:
-        rate.append(partition_consumed_total[index])
-      # print('rate'+str(rate))
-      # print("rate max"+str(round(rate[0]/sum(rate)*10)))
-      key = 0 if model2_index % 10 <= round(rate[0]/sum(rate)*10)  else 1
+      count_in_partition = __cal_count_in_partition(partition_info, model_id, partition_producer_total, partition_consumed_total)
+      key = 0 if model2_index % 10 <= round(count_in_partition[0]/sum(count_in_partition)*10)  else 1
       partition_id = partition_info[model_id][key]
     else:
       partition_id = partition_info[model_id][0]
@@ -99,7 +112,7 @@ def __send_producer(partition_info, partition_consumed_total, producer, value, d
 
   try:
     result = res.get(timeout=10)
-    print("Value = %d, key = %d, partition = %d, offset = %d" %(model_id, data_list[model_id]["dataModelId"] , partition_id, result.offset))
+    # print("Value = %d, key = %d, partition = %d, offset = %d" %(model_id, data_list[model_id]["dataModelId"] , partition_id, result.offset))
   except KafkaError:
     error_message = "データの送信中にエラーが発生しました。"
     print(error_message)
@@ -109,7 +122,19 @@ def __send_producer(partition_info, partition_consumed_total, producer, value, d
 
   data_list[model_id]["dataModelId"] += 1
 
-  return data_list
+  return data_list, partition_id
+
+def __cal_count_in_partition(partition_info, model_id, partition_producer_total, partition_consumed_total):
+  count_in_partition = list()
+  print("partition_producer_total",partition_producer_total)
+  print("partition_consumed_total", partition_consumed_total)
+  print("partition_info[model_id]", partition_info[model_id])
+  for index in partition_info[model_id]:
+    count_in_partition.append(partition_producer_total[index] - partition_consumed_total[index])
+  print('rate'+str(count_in_partition))
+  print("rate max"+str(round(count_in_partition[0]/sum(count_in_partition)*10)))
+  print("rate max"+str(round(count_in_partition[1]/sum(count_in_partition)*10)))
+  return count_in_partition
 
 def __create_producer():
   return KafkaProducer(
@@ -120,14 +145,6 @@ def __create_producer():
 def __re_create_producer(producer):
   producer.close()
   return __create_producer()
-
-
-def __set_partition_produce_info(redis_con, partition_produce_new):
-  for key in range(len(partition_produce_new)):
-    redis_con.keys
-    partition_produce_total_tmp = redis_con.get("partition_produce_"+str(key))
-    redis_con.set("partition_produce_"+str(key), partition_produce_new[key] + partition_produce_total_tmp)
-
 
 def __get_partition_consumed_info(redis_con):
   # res = redis_con.get(KAFKA_REDIS_INFO)
@@ -147,6 +164,33 @@ def __get_partition_consumed_info(redis_con):
 
   return partition_info, partition_consumed_total, start_time
 
+def __set_partition_produce_info(redis_con, partition_produce_new):
+  print("partition_produce_new",partition_produce_new)
+  for key in range(len(partition_produce_new)):
+    print("key",key)
+    print("partition_produce_new[key+1]",partition_produce_new[str(key+1)])
+    redis_key = "partition_"+str(key)+"-producer_"+str(PRODUCER_NUMBER)
+    partition_produce_total_tmp = 0
+    try:
+      partition_produce_total_tmp = int(redis_con.get(redis_key).decode())
+      print(type(partition_produce_total_tmp))
+      print(partition_produce_total_tmp)
+    except AttributeError:
+      partition_produce_total_tmp = 0
+    redis_con.set(redis_key, str(partition_produce_new[str(key+1)] + partition_produce_total_tmp))
+
+
+def __get_partititons_producer_info(redis_con):
+  partition_producer_total = dict()
+  for partition_index in range(5):
+    print(partition_index)
+    value = 0
+    for producer_index in range(5):
+      key = "partition_"+str(partition_index)+"-producer_"+str(producer_index+1)
+      if redis_con.keys(key):
+        value += int(redis_con.get(key).decode())
+    partition_producer_total[partition_index] = value
+  return partition_producer_total
 
 def metrics_output(producer):
   metrics = producer.metrics()
@@ -161,6 +205,8 @@ def json_load():
   data_list = [model_1, model_2, model_3]
   return data_list
 
+def __reset_producer_send_partition_count():
+  return {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}
 
 if __name__ == '__main__':
   main()

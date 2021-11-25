@@ -54,18 +54,28 @@ def main():
                 break
         
         for key in throughput_dict.keys():
-            redis_con.set("partition_"+str(key), str(throughput_dict[key]))
+            # 収集用ログ
+            log_time = time.time()
+            redis_partition_key         = "partition_"+str(key)
+            redis_log_time_key          = "log_"+str(key)+"-"+str(log_time)
+            redis_metrics_log_time_key  = "metrics-log_"+str(key)+"-"+str(log_time)
+            redis_metrics_key           = "metrics_"+str(key)
+
+            redis_con.set(redis_partition_key, str(throughput_dict[key]))
             # print(consumer_client.metrics())
             records_consumed_total = round(consumer_client.metrics()['consumer-fetch-manager-metrics']['records-consumed-total'])
             
             # 収集用ログ
-            log_time = time.time()
-            redis_con.set("log_"+str(key)+"-"+str(log_time), str(throughput_dict[key])) 
-            redis_con.set("metrics-log_"+str(key)+"-"+str(log_time),str(records_consumed_total- pre_records_consumed_total))
-            all_records_consumed_total = redis_con.get("metrics_"+str(key))
+            redis_con.set(redis_log_time_key, str(throughput_dict[key])) 
+            redis_con.set(redis_metrics_log_time_key,str(records_consumed_total - pre_records_consumed_total))
+
+            all_records_consumed_total = redis_con.get(redis_metrics_key)
             if all_records_consumed_total is None:
                 all_records_consumed_total = 0
-            redis_con.set("metrics_"+str(key),str(all_records_consumed_total + records_consumed_total - pre_records_consumed_total))
+            else:
+                all_records_consumed_total = int(all_records_consumed_total.decode())
+            
+            redis_con.set(redis_metrics_key, str(all_records_consumed_total + records_consumed_total - pre_records_consumed_total))
             print("records-consumed-total:"+str(records_consumed_total - pre_records_consumed_total)+"")
             print("all-records-consumed-total:"+str(all_records_consumed_total + records_consumed_total - pre_records_consumed_total)+"")
             pre_records_consumed_total = records_consumed_total
